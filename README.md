@@ -1,1 +1,1 @@
-# specs
+# Determination Labs Specifications
