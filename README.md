@@ -21,13 +21,14 @@ A document's title is followed by the preamble. The preamble is a fenced block o
 DLD:            <number>
 Type:           <type>
 Status:         <status>
-Authors:        <surname>, <given names>
+Authors:        <surname>, <initials>
 Created:        <YYYY-MM-DD>
 Updated:        <YYYY-MM-DD>
 Requires:       <numbers>
 Supersedes:     <number>
 Superseded-By:  <number>
 ```
+
 ### DLD
 
 The **DLD** field is the document number, without padding.
