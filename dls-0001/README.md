@@ -8,6 +8,10 @@ Created:    2026-10-24
 Updated:    2026-10-26
 ```
 
+# Abstract
+
+This document specifies TraverseV, a memory-hard proof-of-work algorithm that produces trustless or permissioned proofs. Constructing an instance fills a buffer of blocks over multiple iterations, using a fill adapted from Argon2. Evaluating candidate nonce values over an input mixes blocks of that buffer across multiple rounds to produce a digest, using a mix adapted from the second loop of scryptROMix. A nonce whose digest satisfies the configured difficulty is a proof. Mining iteratively searches for a proof over an input by evaluating a sequence of nonce values, while verifying evaluates a single nonce. Trustless proofs use the BLAKE3 regular hash function, and permissioned proofs use the BLAKE3 keyed hash function, so only instances holding the same shared secret can verify them.
+
 # Specification
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
