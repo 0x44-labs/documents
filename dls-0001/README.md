@@ -166,3 +166,7 @@ Mining has no bound on its runtime at high difficulties. Because the counter can
 ## Verifying
 
 Verifying determines whether a nonce is a proof over an input, by evaluating the nonce over that input. A nonce can only be verified by an instance sharing the same configuration as the instance that mined it, and using the same nonce type that mining used. The verifying instance **MUST** accept the nonce if and only if it is a proof over the input.
+
+# Implementations
+
+- **Rust**: [0x44-labs/rs-traversev](https://github.com/0x44-labs/rs-traversev), published as the [`traversev`](https://crates.io/crates/traversev) crate.
