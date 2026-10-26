@@ -33,7 +33,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Parameters
 
-TraverseV is configured by four parameters, each a 32-bit unsigned integer. An implementation MUST reject values outside these ranges.
+TraverseV is configured by four parameters, each a 32-bit unsigned integer. An implementation **MUST** reject values outside these ranges.
 
 | Name | Meaning                            | Range         |
 |------|------------------------------------|---------------|
@@ -48,7 +48,7 @@ An instance is constructed from a configuration. The proofs of a Trustless insta
 
 ### Initial Blocks
 
-In both modes, a tag MUST be derived from the application context. In the Permissioned mode, a key MUST be derived from the shared secret, with the application context as the key derivation context.
+In both modes, a tag **MUST** be derived from the application context. In the Permissioned mode, a key **MUST** be derived from the shared secret, with the application context as the key derivation context.
 
 ```
 tag = BLAKE3(context)
@@ -56,7 +56,7 @@ key = DERIVE(context, secret)   // Permissioned only
 ```
 _Figure 1: Context tag and key computation._
 
-The 64-octet *H_0* value MUST be computed over configuration, following [RFC 9106 Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2) specialised for TraverseV’s parameters and a single lane, with BLAKE3 in place of BLAKE2b. Lengths are in octets.
+The 64-octet *H_0* value **MUST** be computed over configuration, following [RFC 9106 Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2) specialised for TraverseV’s parameters and a single lane, with BLAKE3 in place of BLAKE2b. Lengths are in octets.
 
 The mode is represented by the octet `0x54` for Trustless.
 
@@ -75,7 +75,7 @@ H_0 = XOF(0x50 || LE32(m) || LE32(t) || LE32(e) || LE32(n)
 ```
 *Figure 3: Permissioned H_0 computation.*
 
-The initial two blocks of the buffer _V_ MUST be computed from the *H_0* value.
+The initial two blocks of the buffer _V_ **MUST** be computed from the *H_0* value.
 
 ```
 V[0] = XOF(H_0 || LE32(0), 1024)
@@ -85,11 +85,11 @@ _Figure 4: Initial blocks computation._
 
 ### Buffer Fill
 
-The buffer _V_ has `q = m` blocks. The remaining blocks MUST be filled over _t_ iterations, following RFC 9106 [Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2) and [Section 3.4](https://www.rfc-editor.org/info/rfc9106/#section-3.4), except that there is a single lane and the candidate set is not restricted to segments but spans the whole array.
+The buffer _V_ has `q = m` blocks. The remaining blocks **MUST** be filled over _t_ iterations, following RFC 9106 [Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2) and [Section 3.4](https://www.rfc-editor.org/info/rfc9106/#section-3.4), except that there is a single lane and the candidate set is not restricted to segments but spans the whole array.
 
 The first iteration fills `V[2]` to `V[q-1]`, and each later iteration fills `V[0]` to `V[q-1]`, in ascending order of index. The index of the block being filled is _j_, and the index of the block before it is _prev_, which is `j - 1`, or `q - 1` when _j_ is 0 in a later iteration.
 
-The candidate set _W_ holds the blocks that `V[j]` may reference, in ascending order of index, and its size is _|W|_.
+The candidate set _W_ holds the blocks from which the reference block for `V[j]` is selected, in ascending order of index, and its size is _|W|_.
 
 ```
 First iteration:    W = V[0], ..., V[j-2]           |W| = j - 1
@@ -117,7 +117,7 @@ _Figure 7: Block computation._
 
 ## Nonce Evaluation
 
-A block _X_ MUST be derived from the input, the nonce, and the `tag` computed in Figure 1.
+A block _X_ **MUST** be derived from the input, the nonce, and the `tag` computed in Figure 1.
 
 In the Trustless mode, _X_ is computed with the BLAKE3 regular hash function.
 
@@ -135,7 +135,7 @@ X = KXOF(key, prefix || LE(nonce) || tag, 1024)
 ```
 _Figure 9: Permissioned X computation._
 
-The second loop of scryptROMix described in [RFC 7914 Section 5](https://www.rfc-editor.org/info/rfc7914/#section-5) MUST be applied to _X_, with three differences: the loop runs for _e_ rounds (independent from the length of _V_), Integerify is narrowed to the last 8 octets of _X_, and the length of _V_ is not constrained to a power of two. In each round, Integerify selects the block of _V_ that _X_ is combined with, an the blocks are mixed. After the last round, the evaluation result is the BLAKE3 regular hash digest of _X_.
+The second loop of scryptROMix described in [RFC 7914 Section 5](https://www.rfc-editor.org/info/rfc7914/#section-5) **MUST** be applied to _X_, with three differences: the loop runs for _e_ rounds (independent from the length of _V_), Integerify is narrowed to the last 8 octets of _X_, and the length of _V_ is not constrained to a power of two. In each round, Integerify selects the block of _V_ that _X_ is combined with, an the blocks are mixed. After the last round, the evaluation result is the BLAKE3 regular hash digest of _X_.
 
 ```
 repeat e times:
@@ -145,7 +145,7 @@ digest = BLAKE3(X)
 ```
 _Figure 10: Evaluation rounds and digest._
 
-A digest satisfies the difficulty when its _n_ leading bits are zero, with the bits of each octet ordered from most significant to least significant. An implementation SHOULD perform this check in constant time with respect to the digest.
+A digest satisfies the difficulty when its _n_ leading bits are zero, with the bits of each octet ordered from most significant to least significant. An implementation **SHOULD** perform this check in constant time with respect to the digest.
 
 ## Mining
 
@@ -161,8 +161,8 @@ repeat:
 ```
 _Figure 11: Mining search._
 
-Mining has no bound on its runtime at high difficulties. Because the counter can overflow, the counter type SHOULD be wide enough to reach a proof before overflowing. A counter that wraps around revisits nonce values it has already evaluated, causing an infinite loop.
+Mining has no bound on its runtime at high difficulties. Because the counter can overflow, the counter type **SHOULD** be wide enough to reach a proof before overflowing. A counter that wraps around revisits nonce values it has already evaluated, causing an infinite loop.
 
 ## Verifying
 
-Verifying determines whether a nonce is a proof over an input, by evaluating the nonce over that input. The nonce MUST be a value of the same nonce type that mining used, and the verifying instance MUST have the same configuration as the instance that mined the nonce. The verifying instance MUST accept the nonce if and only if it is a proof over the input.
+Verifying determines whether a nonce is a proof over an input, by evaluating the nonce over that input. A nonce can only be verified by an instance sharing the same configuration as the instance that mined it, and using the same nonce type that mining used. The verifying instance **MUST** accept the nonce if and only if it is a proof over the input.
