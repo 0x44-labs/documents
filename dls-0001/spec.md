@@ -140,8 +140,22 @@ _Figure 10: Evaluation rounds and digest._
 
 A digest satisfies the difficulty when its _n_ leading bits are zero, with the bits of each octet ordered from most significant to least significant. An implementation SHOULD perform this check in constant time with respect to the digest.
 
-## Mining and Verifying
+## Mining
 
-Mining searches for a proof over an input. A counter of type _T_ starts at a chosen value, and an increment of type _I_ is added to it each time. Each counter value is converted into a nonce of type _N_, and the search ends when the digest satisfies the difficulty. The nonce that does so is the proof. The runtime is unbounded on high difficulties. As the counter can overflow, its integer type SHOULD be wide enough to reach a satisfying proof, otherwise the counter may wrap around causing an infinite loop.
+Mining iteratively searches for a proof over an input by evaluating a sequence of nonce values. A counter of type _T_ starts at a chosen starting value, and after each unsuccessful evaluation an increment of type _I_ is added to it. For each evaluation, the counter is converted to a nonce of type _N_. The search ends at the first nonce whose digest satisfies the difficulty, and that nonce is the proof.
 
-Verifying a proof over an input evaluates the proof as the nonce. The proof MUST be a value of the same type _N_ that mining returned. The verifying instance MUST have the same mode and configuration as the instance the proof was mined with, and in the Permissioned mode the same shared secret. The verifying instance MUST accept the proof if and only if the digest satisfies the difficulty.
+```
+counter = start
+repeat:
+    nonce = N(counter)
+    if Evaluate(input, nonce) satisfies the difficulty:
+        return nonce
+    counter = counter + increment
+```
+_Figure 11: Mining search._
+
+Mining has no bound on its runtime at high difficulties. Because the counter can overflow, its type _T_ SHOULD be wide enough to reach a proof before overflowing. A counter that wraps around revisits nonce values it has already evaluated, causing an infinite loop.
+
+## Verifying
+
+A proof is verified over an input by evaluating it as the nonce. The proof MUST be a value of the same type _N_ that the mining returned, and the verifying instance MUST have the same configuration as the instance that mined the proof. The verifying instance MUST accept the proof if and only if evaluation satisfies the difficulty.
