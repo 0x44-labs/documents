@@ -61,9 +61,9 @@ H0 = XOF(MODE || LE32(m) || LE32(t) || LE32(e) || LE32(n)
         || LE32(length of context) || context, 64)
 ```
 
-In the Permissioned mode, `LE32(length of secret) || secret` MUST be appended to the input. This follows the "H0 generation and starting blocks" of [RFC 9106 Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2), specialised for TraverseV’s parameters and a single lane, with BLAKE3 in place of BLAKE2b.
+In the Permissioned mode, `LE32(length of secret) || secret` MUST be appended to the octet string passed to XOF to compute _H0_. Both modes follow "H0 generation and starting blocks" of [RFC 9106 Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2), specialised for TraverseV’s parameters and a single lane, with BLAKE3 in place of BLAKE2b.
 
-Finally, the first two blocks of the buffer _V_ MUST be computed, using the regular BLAKE3 mode in both modes.
+Finally, the first two blocks of the buffer _V_ MUST be computed.
 
 ```
 V[0] = XOF(H0 || LE32(0), 1024)
