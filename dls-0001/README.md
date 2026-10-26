@@ -15,7 +15,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 ## Definitions
 
 - **Application context**: a UTF-8 string.
-- **BLAKE3(x)**: 32-octet [BLAKE3](https://github.com/blake3-team/blake3) regular hash of _x_.
+- **BLAKE3(x)**: 32-octet [BLAKE3](https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf) regular hash of _x_.
 - **Block**: 1024 octets, read as 128 little-endian 64-bit words.
 - **BlockMix(X)**: the [scryptBlockMix](https://www.rfc-editor.org/info/rfc7914/#section-4) algorithm with `r = 8`.
 - **Configuration**: an application context, instance mode, parameters, and, in the Permissioned mode, a shared secret.
@@ -170,3 +170,10 @@ Verifying determines whether a nonce is a proof over an input, by evaluating the
 # Implementations
 
 - **Rust**: [0x44-labs/rs-traversev](https://github.com/0x44-labs/rs-traversev), published as the [`traversev`](https://crates.io/crates/traversev) crate.
+
+# References
+
+- Biryukov, A., Dinu, D., Khovratovich, D., & Josefsson, S. (2021). _RFC 9106: Argon2 memory-hard function for password hashing and proof-of-work applications_. RFC Editor. https://www.rfc-editor.org/info/rfc9106
+- Bradner, S. (1997). _RFC 2119: Key words for use in RFCs to indicate requirement levels_. RFC Editor. https://www.rfc-editor.org/info/rfc2119
+- O'Connor, J., Aumasson, J.-P., Neves, S., & Wilcox-O'Hearn, Z. (2020). _BLAKE3_. GitHub. https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf
+- Percival, C., & Josefsson, S. (2016). _RFC 7914: The scrypt password-based key derivation function_. RFC Editor. https://www.rfc-editor.org/info/rfc7914
