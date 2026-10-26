@@ -19,14 +19,17 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - **Block**: 1024 octets, read as 128 little-endian 64-bit words.
 - **BlockMix(X)**: the [scryptBlockMix](https://www.rfc-editor.org/info/rfc7914/#section-4) algorithm with `r = 8`.
 - **Configuration**: an application context, instance mode, parameters, and, in the Permissioned mode, a shared secret.
-- **DERIVE(c, k)**: 32-octet **BLAKE3** key derivation output, with the context string _c_ and the key material _k_.
+- **Counter type**: an integer type for the counter and increment in mining, whose values are convertible to the nonce type.
+- **DERIVE(c, k)**: 32-octet BLAKE3 key derivation output, with the context string _c_ and the key material _k_.
 - **G(X, Y)**: the [compression function](https://www.rfc-editor.org/info/rfc9106/#section-3.5) of Argon2.
 - **Input**: an octet string.
-- **KXOF(K, x, L)**: first _L_ octets of the **BLAKE3** keyed hash extendable output of _x_, with the 32-octet key _K_.
+- **KXOF(K, x, L)**: first _L_ octets of the BLAKE3 keyed hash extendable output of _x_, with the 32-octet key _K_.
 - **Mode**: either Trustless or Permissioned, fixed when an instance is constructed.
-- **Nonce**: a value evaluated over an input, and which is a proof when its digest satisfies the configured difficulty.
+- **Nonce**: a value of the nonce type, evaluated over an input.
+- **Nonce type**: a type whose values are encoded as little-endian bytes.
+- **Proof**: a nonce whose digest over an input satisfies the configured difficulty.
 - **Shared secret**: an octet string.
-- **XOF(x, L)**: first _L_ octets of the **BLAKE3** regular hash extendable output of _x_.
+- **XOF(x, L)**: first _L_ octets of the BLAKE3 regular hash extendable output of _x_.
 
 ## Parameters
 
@@ -55,7 +58,7 @@ _Figure 1: Context tag and key computation._
 
 The 64-octet *H_0* value MUST be computed over configuration, following [RFC 9106 Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2) specialised for TraverseV’s parameters and a single lane, with BLAKE3 in place of BLAKE2b. Lengths are in octets.
 
-The mode is represented by the octet _0x54_ for Trustless.
+The mode is represented by the octet `0x54` for Trustless.
 
 ```
 H_0 = XOF(0x54 || LE32(m) || LE32(t) || LE32(e) || LE32(n)
@@ -63,12 +66,12 @@ H_0 = XOF(0x54 || LE32(m) || LE32(t) || LE32(e) || LE32(n)
 ```
 *Figure 2: Trustless H_0 computation.*
 
-The mode is represented by the octet _0x50_ for Permissioned.
+The mode is represented by the octet `0x50` for Permissioned. *H_0* computation for the Permissioned mode additionally requires the shared secret.
 
 ```
 H_0 = XOF(0x50 || LE32(m) || LE32(t) || LE32(e) || LE32(n)
         || LE32(length of context) || context
-        || LE32(length of secret) || secret, 64)
+        || LE32(length of shared secret) || shared secret, 64)
 ```
 *Figure 3: Permissioned H_0 computation.*
 
@@ -114,13 +117,17 @@ _Figure 7: Block computation._
 
 ## Nonce Evaluation
 
-A block _X_ MUST be derived from the input and the nonce. The nonce is of type _N_. The `tag` and `key` are those computed in Figure 1.
+A block _X_ MUST be derived from the input, the nonce, and the `tag` computed in Figure 1.
+
+In the Trustless mode, _X_ is computed with the BLAKE3 regular hash function.
 
 ```
 prefix = BLAKE3(input)
 X = XOF(prefix || LE(nonce) || tag, 1024)
 ```
 _Figure 8: Trustless X computation._
+
+In the Permissioned mode, _X_ is computed with the BLAKE3 keyed hash function, using the `key` computed in Figure 1.
 
 ```
 prefix = BLAKE3(input)
@@ -142,20 +149,20 @@ A digest satisfies the difficulty when its _n_ leading bits are zero, with the b
 
 ## Mining
 
-Mining iteratively searches for a proof over an input by evaluating a sequence of nonce values. A counter of type _T_ starts at a chosen starting value, and after each unsuccessful evaluation an increment of type _I_ is added to it. For each evaluation, the counter is converted to a nonce of type _N_. The search ends at the first nonce whose digest satisfies the difficulty, and that nonce is the proof.
+Mining iteratively searches for a proof over an input by evaluating a sequence of nonce values. A counter starts at a chosen starting value, and after each unsuccessful evaluation an increment is added to it, both being values of the counter type. For each evaluation, the counter is converted to a nonce. The search ends at the first nonce that is a proof.
 
 ```
 counter = start
 repeat:
-    nonce = N(counter)
+    nonce = counter
     if Evaluate(input, nonce) satisfies the difficulty:
         return nonce
     counter = counter + increment
 ```
 _Figure 11: Mining search._
 
-Mining has no bound on its runtime at high difficulties. Because the counter can overflow, its type _T_ SHOULD be wide enough to reach a proof before overflowing. A counter that wraps around revisits nonce values it has already evaluated, causing an infinite loop.
+Mining has no bound on its runtime at high difficulties. Because the counter can overflow, the counter type SHOULD be wide enough to reach a proof before overflowing. A counter that wraps around revisits nonce values it has already evaluated, causing an infinite loop.
 
 ## Verifying
 
-A proof is verified over an input by evaluating it as the nonce. The proof MUST be a value of the same type _N_ that the mining returned, and the verifying instance MUST have the same configuration as the instance that mined the proof. The verifying instance MUST accept the proof if and only if evaluation satisfies the difficulty.
+Verifying determines whether a nonce is a proof over an input, by evaluating the nonce over that input. The nonce MUST be a value of the same nonce type that mining used, and the verifying instance MUST have the same configuration as the instance that mined the nonce. The verifying instance MUST accept the nonce if and only if it is a proof over the input.
