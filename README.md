@@ -28,15 +28,15 @@ Requires:       <numbers>
 Supersedes:     <number>
 Superseded-By:  <number>
 ```
-## DLD
+### DLD
 
 The **DLD** field is the document number, without padding.
 
-## Type
+### Type
 
 The **Type** field is either `Specification` or `Informational`. Only Specifications are normative, and they use the key words of RFC 2119.
 
-## Status
+### Status
 
 The **Status** field indicates one of the following:
 
@@ -49,26 +49,26 @@ The **Status** field indicates one of the following:
 
 The permitted transitions are In Progress to Draft, Draft to Final, Final to Deprecated or Superseded, Deprecated to Superseded, and In Progress or Draft to Withdrawn.
 
-## Authors
+### Authors
 
 The **Authors** field lists one or more author names, each as the surname followed by the initials of the given names (Surname, Initials), separated by semicolons.
 
-## Created
+### Created
 
 The **Created** field is the date the document was added, as an ISO 8601 extended format calendar date (YYYY-MM-DD).
 
-## Updated
+### Updated
 
 The **Updated** field is the date of the most recent change to the document, as an ISO 8601 extended format calendar date.
 
-## Requires
+### Requires
 
 The conditional **Requires** field lists the numbers of other DLDs whose normative content this one relies on, separated by commas. External sources are listed under References in the document itself.
 
-## Supersedes
+### Supersedes
 
 The conditional **Supersedes** field is the number of the document this one replaces. Present if and only if this document replaces another.
 
-## Superseded-By
+### Superseded-By
 
 The conditional **Superseded-By** field is the number of the document that replaces this one. Present if and only if the status is Superseded.
