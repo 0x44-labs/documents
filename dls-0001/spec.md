@@ -14,19 +14,16 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Definitions
 
-- **BLAKE3(x)**: 32-octet [BLAKE3](https://github.com/blake3-team/blake3) regular hash of _x_.
-- **XOF(x, L)**: first _L_ octets of the **BLAKE3** regular hash extendable output of _x_.
-- **KXOF(K, x, L)**: first _L_ octets of the **BLAKE3** keyed hash extendable output of _x_, with the 32-octet key _K_.
-- **DERIVE(c, k)**: 32-octet **BLAKE3** key derivation output, with the context string _c_ and the key material _k_.
-- **Block**: 1024 octets, read as 128 little-endian 64-bit words.
-- **G(X, Y)**: the [compression function](https://www.rfc-editor.org/info/rfc9106/#section-3.5) of Argon2.
-- **BlockMix(X)**: the [scryptBlockMix](https://www.rfc-editor.org/info/rfc7914/#section-4) algorithm with `r = 8`.
-- **A || B**: concatenation of _A_ and _B_.
-- **A XOR B**: bitwise exclusive-or, applied word by word on blocks.
-- **LE32(x)**: 4-octet little-endian encoding of _x_.
 - **Application context**: a UTF-8 string.
-- **Shared secret**: an octet string.
+- **BLAKE3(x)**: 32-octet [BLAKE3](https://github.com/blake3-team/blake3) regular hash of _x_.
+- **Block**: 1024 octets, read as 128 little-endian 64-bit words.
+- **BlockMix(X)**: the [scryptBlockMix](https://www.rfc-editor.org/info/rfc7914/#section-4) algorithm with `r = 8`.
+- **DERIVE(c, k)**: 32-octet **BLAKE3** key derivation output, with the context string _c_ and the key material _k_.
+- **G(X, Y)**: the [compression function](https://www.rfc-editor.org/info/rfc9106/#section-3.5) of Argon2.
 - **Input**: an octet string.
+- **KXOF(K, x, L)**: first _L_ octets of the **BLAKE3** keyed hash extendable output of _x_, with the 32-octet key _K_.
+- **Shared secret**: an octet string.
+- **XOF(x, L)**: first _L_ octets of the **BLAKE3** regular hash extendable output of _x_.
 
 ## Parameters
 
