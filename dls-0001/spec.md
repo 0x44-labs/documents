@@ -24,6 +24,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - **Input**: an octet string.
 - **KXOF(K, x, L)**: first _L_ octets of the **BLAKE3** keyed hash extendable output of _x_, with the 32-octet key _K_.
 - **Mode**: either Trustless or Permissioned, fixed when an instance is constructed.
+- **Nonce**: a value evaluated over an input, and which is a proof when its digest satisfies the configured difficulty.
 - **Shared secret**: an octet string.
 - **XOF(x, L)**: first _L_ octets of the **BLAKE3** regular hash extendable output of _x_.
 
@@ -111,26 +112,33 @@ V[j] = G(V[prev], V[z])
 ```
 _Figure 7: Block computation._
 
-## Evaluating a Nonce Value
+## Nonce Evaluation
 
-First, a block _X_ MUST be derived from the input and a nonce of type _N_, which is encoded as the little-endian bytes of that type.
+A block _X_ MUST be derived from the input and the nonce. The nonce is of type _N_. The `tag` and `key` are those computed in Figure 1.
 
 ```
 prefix = BLAKE3(input)
-X = XOF(prefix || nonce || tag, 1024)       // Trustless
-X = KXOF(key, prefix || nonce || tag, 1024) // Permissioned
+X = XOF(prefix || LE(nonce) || tag, 1024)
 ```
+_Figure 8: Trustless X computation._
 
-Next, _X_ MUST be mixed over _e_ rounds, following the second loop of [scryptROMix](https://www.rfc-editor.org/info/rfc7914/#section-5), with these differences:
+```
+prefix = BLAKE3(input)
+X = KXOF(key, prefix || LE(nonce) || tag, 1024)
+```
+_Figure 9: Permissioned X computation._
 
-- The loop runs for _e_ rounds, independently of the length of _V_.
-- Integerify is narrowed to the last 8 octets of _X_, and the length of _V_ is not constrained to a power of two.
+The second loop of scryptROMix described in [RFC 7914 Section 5](https://www.rfc-editor.org/info/rfc7914/#section-5) MUST be applied to _X_, with three differences: the loop runs for _e_ rounds (independent from the length of _V_), Integerify is narrowed to the last 8 octets of _X_, and the length of _V_ is not constrained to a power of two. In each round, Integerify selects the block of _V_ that _X_ is combined with, an the blocks are mixed. After the last round, the evaluation result is the BLAKE3 regular hash digest of _X_.
 
-In each round, _j_ is the last word of _X_ modulo _q_, _X_ is set to _X_ XOR the block of _V_ at index _j_, and then _X_ is set to **BlockMix** of _X_.
+```
+repeat e times:
+    j = Integerify(X) mod q
+    X = BlockMix(X XOR V[j])
+digest = BLAKE3(X)
+```
+_Figure 10: Evaluation rounds and digest._
 
-Finally, the digest is **BLAKE3** of _X_, using the regular mode in both modes.
-
-A digest satisfies the difficulty when its first _n_ divided by 8 octets, rounded down, are zero, and the _n_ modulo 8 most significant bits of the next octet are zero.
+A digest satisfies the difficulty when its _n_ leading bits are zero, with the bits of each octet ordered from most significant to least significant. An implementation SHOULD perform this check in constant time with respect to the digest.
 
 ## Mining and Verifying
 
