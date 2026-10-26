@@ -4,7 +4,14 @@ This repository hosts Determination Labs Documents (DLDs). Each document lives i
 
 # Document Format
 
-...
+A document is made up of the following parts, in this order.
+
+1. **Title**: a top-level heading with the document's title.
+2. **Preamble**: the metadata of the document, described below.
+3. **Abstract**: a single paragraph summarising the document.
+4. **Body**: the substance of the document, organised into sections suited to its subject. In a Specification, the Body opens with the statement that the key words of RFC 2119 are to be interpreted as described there, then the normative sections. In an Informational document, the Body consists of explanatory sections and does not use the key words.
+5. **Implementations**: a list of implementations, each beginning with its language in bold, followed by a link to its source repository and, where it is published, its package.
+6. **References**: the external sources the document links to, in APA style.
 
 ## Preamble
 
