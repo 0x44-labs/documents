@@ -53,10 +53,10 @@ fn mine_proof(v: &Vector) -> bool {
 #[test]
 fn mine_vectors() {
     let file: File<Vector> = load("mine.json");
-    assert!(!file.tests.is_empty());
+    assert!(!file.vectors.is_empty());
 
     let failures: Vec<&str> = file
-        .tests
+        .vectors
         .iter()
         .filter(|v| !mine_proof(v))
         .map(|v| v.id.as_str())

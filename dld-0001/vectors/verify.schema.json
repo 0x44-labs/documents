@@ -3,10 +3,10 @@
     "title": "TraverseV verification vectors",
     "type": "object",
     "required": [
-        "tests"
+        "vectors"
     ],
     "properties": {
-        "tests": {
+        "vectors": {
             "type": "array",
             "items": {
                 "type": "object",

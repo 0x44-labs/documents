@@ -1,6 +1,6 @@
 {
     "schema": "mine.schema.json",
-    "tests": [
+    "vectors": [
         {
             "id": "trustless_u32",
             "context": "TRAVERSEV_TEST",

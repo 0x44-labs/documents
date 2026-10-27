@@ -18,10 +18,10 @@ struct Vector {
 #[test]
 fn params_vectors() {
     let file: File<Vector> = load("params.json");
-    assert!(!file.tests.is_empty());
+    assert!(!file.vectors.is_empty());
 
     let failures: Vec<&str> = file
-        .tests
+        .vectors
         .iter()
         .filter(|v| {
             Params::new(v.m_cost, v.t_cost, v.e_cost, v.n_cost).is_ok()

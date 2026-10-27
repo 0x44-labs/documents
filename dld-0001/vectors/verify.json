@@ -1,6 +1,6 @@
 {
     "schema": "verify.schema.json",
-    "tests": [
+    "vectors": [
         {
             "id": "trustless_baseline_valid",
             "context": "TRAVERSEV_TEST",

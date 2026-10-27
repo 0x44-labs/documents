@@ -49,10 +49,10 @@ fn verify_proof(v: &Vector) -> bool {
 #[test]
 fn verify_vectors() {
     let file: File<Vector> = load("verify.json");
-    assert!(!file.tests.is_empty());
+    assert!(!file.vectors.is_empty());
 
     let failures: Vec<&str> = file
-        .tests
+        .vectors
         .iter()
         .filter(|v| verify_proof(v) != v.valid)
         .map(|v| v.id.as_str())

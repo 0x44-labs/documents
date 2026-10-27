@@ -7,7 +7,7 @@ const VECTORS_DIR: &str = "../../vectors";
 
 #[derive(Deserialize)]
 pub(crate) struct File<T> {
-    pub(crate) tests: Vec<T>,
+    pub(crate) vectors: Vec<T>,
 }
 
 pub(crate) fn load<T: DeserializeOwned>(name: &str) -> T {
