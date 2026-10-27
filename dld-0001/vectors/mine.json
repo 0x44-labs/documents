@@ -1,0 +1,100 @@
+{
+    "schema": "mine.schema.json",
+    "tests": [
+        {
+            "id": "trustless_u32",
+            "context": "TRAVERSEV_TEST",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 4,
+            "start": 0,
+            "increment": 1,
+            "proof": "1341"
+        },
+        {
+            "id": "trustless_u64",
+            "context": "TRAVERSEV_TEST",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "start": 0,
+            "increment": 1,
+            "proof": "4328"
+        },
+        {
+            "id": "trustless_u128",
+            "context": "TRAVERSEV_TEST",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 16,
+            "start": 0,
+            "increment": 1,
+            "proof": "14278"
+        },
+        {
+            "id": "permissioned_u32",
+            "context": "TRAVERSEV_TEST",
+            "secret": "74686973206973206120736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 4,
+            "start": 0,
+            "increment": 1,
+            "proof": "2236"
+        },
+        {
+            "id": "permissioned_u64",
+            "context": "TRAVERSEV_TEST",
+            "secret": "74686973206973206120736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "start": 0,
+            "increment": 1,
+            "proof": "2685"
+        },
+        {
+            "id": "permissioned_u128",
+            "context": "TRAVERSEV_TEST",
+            "secret": "74686973206973206120736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 16,
+            "start": 0,
+            "increment": 1,
+            "proof": "13559"
+        },
+        {
+            "id": "trustless_empty_context",
+            "context": "",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 16,
+            "start": 0,
+            "increment": 1,
+            "proof": "4111"
+        },
+        {
+            "id": "permissioned_empty_context",
+            "context": "",
+            "secret": "74686973206973206120736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 16,
+            "start": 0,
+            "increment": 1,
+            "proof": "5741"
+        },
+        {
+            "id": "trustless_large_start",
+            "context": "TRAVERSEV_TEST",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "start": 65535,
+            "increment": 1,
+            "proof": "66165"
+        },
+        {
+            "id": "permissioned_large_start",
+            "context": "TRAVERSEV_TEST",
+            "secret": "74686973206973206120736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "start": 65535,
+            "increment": 1,
+            "proof": "68258"
+        }
+    ]
+}

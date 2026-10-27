@@ -1,0 +1,51 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "TraverseV mining vectors",
+    "type": "object",
+    "required": [
+        "tests"
+    ],
+    "properties": {
+        "tests": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "context",
+                    "input",
+                    "width",
+                    "start",
+                    "increment",
+                    "proof"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "context": {
+                        "type": "string"
+                    },
+                    "secret": {
+                        "type": "string"
+                    },
+                    "input": {
+                        "type": "string"
+                    },
+                    "width": {
+                        "type": "integer"
+                    },
+                    "start": {
+                        "type": "integer"
+                    },
+                    "increment": {
+                        "type": "integer"
+                    },
+                    "proof": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

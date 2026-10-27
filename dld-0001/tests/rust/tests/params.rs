@@ -3,13 +3,10 @@ mod common;
 use serde::Deserialize;
 use traversev::Params;
 
-#[derive(Deserialize)]
-struct File {
-    tests: Vec<Case>,
-}
+use crate::common::{File, load};
 
 #[derive(Deserialize)]
-struct Case {
+struct Vector {
     id: String,
     m_cost: u32,
     t_cost: u32,
@@ -20,17 +17,17 @@ struct Case {
 
 #[test]
 fn params_vectors() {
-    let file: File = common::load("params.json");
+    let file: File<Vector> = load("params.json");
     assert!(!file.tests.is_empty());
 
     let failures: Vec<&str> = file
         .tests
         .iter()
-        .filter(|c| {
-            Params::new(c.m_cost, c.t_cost, c.e_cost, c.n_cost).is_ok()
-                != c.valid
+        .filter(|v| {
+            Params::new(v.m_cost, v.t_cost, v.e_cost, v.n_cost).is_ok()
+                != v.valid
         })
-        .map(|c| c.id.as_str())
+        .map(|v| v.id.as_str())
         .collect();
 
     assert!(failures.is_empty(), "wrong accept/reject for: {failures:?}");

@@ -1,3 +1,3 @@
 mod load;
 
-pub(crate) use load::load;
+pub(crate) use load::{File, load};
