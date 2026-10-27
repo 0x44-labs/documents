@@ -1,0 +1,44 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "TraverseV parameter validation vectors",
+    "type": "object",
+    "required": [
+        "tests"
+    ],
+    "properties": {
+        "tests": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "m_cost",
+                    "t_cost",
+                    "e_cost",
+                    "n_cost",
+                    "valid"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "m_cost": {
+                        "type": "integer"
+                    },
+                    "t_cost": {
+                        "type": "integer"
+                    },
+                    "e_cost": {
+                        "type": "integer"
+                    },
+                    "n_cost": {
+                        "type": "integer"
+                    },
+                    "valid": {
+                        "type": "boolean"
+                    }
+                }
+            }
+        }
+    }
+}

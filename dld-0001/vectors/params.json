@@ -1,0 +1,125 @@
+{
+    "schema": "params.schema.json",
+    "tests": [
+        {
+            "id": "baseline",
+            "m_cost": 19456,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 20,
+            "valid": true
+        },
+        {
+            "id": "min_m_cost",
+            "m_cost": 2,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 20,
+            "valid": true
+        },
+        {
+            "id": "max_m_cost",
+            "m_cost": 4294967295,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 20,
+            "valid": true
+        },
+        {
+            "id": "min_t_cost",
+            "m_cost": 19456,
+            "t_cost": 1,
+            "e_cost": 8,
+            "n_cost": 20,
+            "valid": true
+        },
+        {
+            "id": "max_t_cost",
+            "m_cost": 19456,
+            "t_cost": 4294967295,
+            "e_cost": 8,
+            "n_cost": 20,
+            "valid": true
+        },
+        {
+            "id": "min_e_cost",
+            "m_cost": 19456,
+            "t_cost": 3,
+            "e_cost": 1,
+            "n_cost": 20,
+            "valid": true
+        },
+        {
+            "id": "max_e_cost",
+            "m_cost": 19456,
+            "t_cost": 3,
+            "e_cost": 4294967295,
+            "n_cost": 20,
+            "valid": true
+        },
+        {
+            "id": "min_n_cost",
+            "m_cost": 19456,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 1,
+            "valid": true
+        },
+        {
+            "id": "max_n_cost",
+            "m_cost": 19456,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 255,
+            "valid": true
+        },
+        {
+            "id": "zero_m_cost",
+            "m_cost": 0,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 20,
+            "valid": false
+        },
+        {
+            "id": "low_m_cost",
+            "m_cost": 1,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 20,
+            "valid": false
+        },
+        {
+            "id": "zero_t_cost",
+            "m_cost": 19456,
+            "t_cost": 0,
+            "e_cost": 8,
+            "n_cost": 20,
+            "valid": false
+        },
+        {
+            "id": "zero_e_cost",
+            "m_cost": 19456,
+            "t_cost": 3,
+            "e_cost": 0,
+            "n_cost": 20,
+            "valid": false
+        },
+        {
+            "id": "zero_n_cost",
+            "m_cost": 19456,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 0,
+            "valid": false
+        },
+        {
+            "id": "256_n_cost",
+            "m_cost": 19456,
+            "t_cost": 3,
+            "e_cost": 8,
+            "n_cost": 256,
+            "valid": false
+        }
+    ]
+}
