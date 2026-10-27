@@ -58,8 +58,8 @@ fn mine_vectors() {
     let failures: Vec<&str> = file
         .tests
         .iter()
-        .filter(|c| !mine_proof(c))
-        .map(|c| c.id.as_str())
+        .filter(|v| !mine_proof(v))
+        .map(|v| v.id.as_str())
         .collect();
 
     assert!(failures.is_empty(), "wrong proof for: {failures:?}");

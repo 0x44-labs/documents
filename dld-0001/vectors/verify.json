@@ -1,0 +1,167 @@
+{
+    "schema": "verify.schema.json",
+    "tests": [
+        {
+            "id": "trustless_baseline_valid",
+            "context": "TRAVERSEV_TEST",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "proof": "4328",
+            "valid": true
+        },
+        {
+            "id": "permissioned_baseline_valid",
+            "context": "TRAVERSEV_TEST",
+            "secret": "74686973206973206120736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "proof": "2685",
+            "valid": true
+        },
+        {
+            "id": "trustless_valid_0",
+            "context": "FIRST_CONTEXT_STRING",
+            "input": "9845eb5a4edff48f696338e78dc86e19",
+            "width": 4,
+            "proof": "1088",
+            "valid": true
+        },
+        {
+            "id": "trustless_valid_1",
+            "context": "SECOND_CONTEXT_STRING",
+            "input": "09b53ce0d46ac7dc47ba0f53fe30c8cb",
+            "width": 8,
+            "proof": "2816",
+            "valid": true
+        },
+        {
+            "id": "trustless_valid_2",
+            "context": "THIRD_CONTEXT_STRING",
+            "input": "8e3ee89b9b5aac0255d11df331e79d9f",
+            "width": 16,
+            "proof": "4544",
+            "valid": true
+        },
+        {
+            "id": "trustless_valid_3",
+            "context": "FOURTH_CONTEXT_STRING",
+            "input": "00000000000000000000000000000000",
+            "width": 8,
+            "proof": "532",
+            "valid": true
+        },
+        {
+            "id": "trustless_valid_4",
+            "context": "FIFTH_CONTEXT_STRING",
+            "input": "ffffffffffffffffffffffffffffffff",
+            "width": 8,
+            "proof": "1990",
+            "valid": true
+        },
+        {
+            "id": "permissioned_valid_0",
+            "context": "FIRST_CONTEXT_STRING",
+            "secret": "138805e22e1115275f5705364ca449b3",
+            "input": "9845eb5a4edff48f696338e78dc86e19",
+            "width": 4,
+            "proof": "4335",
+            "valid": true
+        },
+        {
+            "id": "permissioned_valid_1",
+            "context": "SECOND_CONTEXT_STRING",
+            "secret": "ec464699cfeb9aa82f2a158842b72957",
+            "input": "09b53ce0d46ac7dc47ba0f53fe30c8cb",
+            "width": 8,
+            "proof": "275",
+            "valid": true
+        },
+        {
+            "id": "permissioned_valid_2",
+            "context": "THIRD_CONTEXT_STRING",
+            "secret": "2e00e02c00d8b72e659b77d27b6a9522",
+            "input": "8e3ee89b9b5aac0255d11df331e79d9f",
+            "width": 16,
+            "proof": "632",
+            "valid": true
+        },
+        {
+            "id": "permissioned_valid_3",
+            "context": "FOURTH_CONTEXT_STRING",
+            "secret": "c93b3825733f27cfd8707b23bee435dc",
+            "input": "00000000000000000000000000000000",
+            "width": 8,
+            "proof": "1218",
+            "valid": true
+        },
+        {
+            "id": "permissioned_valid_4",
+            "context": "FIFTH_CONTEXT_STRING",
+            "secret": "99c2d729d7bfc24ac9df2f6d8b244dd3",
+            "input": "ffffffffffffffffffffffffffffffff",
+            "width": 8,
+            "proof": "2714",
+            "valid": true
+        },
+        {
+            "id": "trustless_invalid_wrong_context",
+            "context": "WRONG_CONTEXT_STRING",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "proof": "4328",
+            "valid": false
+        },
+        {
+            "id": "trustless_invalid_wrong_input",
+            "context": "TRAVERSEV_TEST",
+            "input": "4F6E204D656C616E63686F6C792048696C6C",
+            "width": 8,
+            "proof": "4328",
+            "valid": false
+        },
+        {
+            "id": "trustless_invalid_wrong_proof",
+            "context": "TRAVERSEV_TEST",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "proof": "676767",
+            "valid": false
+        },
+        {
+            "id": "permissioned_invalid_wrong_context",
+            "context": "WRONG_CONTEXT_STRING",
+            "secret": "74686973206973206120736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "proof": "2685",
+            "valid": false
+        },
+        {
+            "id": "permissioned_invalid_wrong_secret",
+            "context": "TRAVERSEV_TEST",
+            "secret": "7468652077726F6E6720736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "proof": "2685",
+            "valid": false
+        },
+        {
+            "id": "permissioned_invalid_wrong_input",
+            "context": "TRAVERSEV_TEST",
+            "secret": "74686973206973206120736563726574",
+            "input": "4F6E204D656C616E63686F6C792048696C6C",
+            "width": 8,
+            "proof": "2685",
+            "valid": false
+        },
+        {
+            "id": "permissioned_invalid_wrong_proof",
+            "context": "TRAVERSEV_TEST",
+            "secret": "74686973206973206120736563726574",
+            "input": "796F75206C6F7374207468652067616D65",
+            "width": 8,
+            "proof": "676767",
+            "valid": false
+        }
+    ]
+}
