@@ -1,5 +1,5 @@
 {
-    "schema": "mine.schema.json",
+    "$schema": "mine.schema.json",
     "vectors": [
         {
             "id": "trustless_u32",

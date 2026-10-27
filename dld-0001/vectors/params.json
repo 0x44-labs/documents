@@ -1,5 +1,5 @@
 {
-    "schema": "params.schema.json",
+    "$schema": "params.schema.json",
     "vectors": [
         {
             "id": "baseline",

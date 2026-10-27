@@ -1,5 +1,5 @@
 {
-    "schema": "verify.schema.json",
+    "$schema": "verify.schema.json",
     "vectors": [
         {
             "id": "trustless_baseline_valid",
