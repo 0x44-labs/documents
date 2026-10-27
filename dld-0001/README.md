@@ -6,7 +6,7 @@ Type:       Specification
 Status:     In Progress
 Authors:    Haap, Jacob V. B.
 Created:    2026-10-24
-Updated:    2026-10-26
+Updated:    2026-10-27
 ```
 
 # Abstract
@@ -61,7 +61,7 @@ key = DERIVE(context, secret)   // Permissioned only
 ```
 _Figure 1: Context tag and key computation._
 
-The 64-octet *H_0* value **MUST** be computed over configuration, following [RFC 9106 Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2) specialised for TraverseV’s parameters and a single lane, with BLAKE3 in place of BLAKE2b. Lengths are in octets.
+The 64-octet *H_0* value **MUST** be computed over the configuration, following [RFC 9106 Section 3.2](https://www.rfc-editor.org/info/rfc9106/#section-3.2) specialised for TraverseV’s parameters and a single lane, with BLAKE3 in place of BLAKE2b. Lengths are in octets.
 
 The mode is represented by the octet `0x54` for Trustless.
 
@@ -140,7 +140,7 @@ X = KXOF(key, prefix || LE(nonce) || tag, 1024)
 ```
 _Figure 9: Permissioned X computation._
 
-The second loop of scryptROMix described in [RFC 7914 Section 5](https://www.rfc-editor.org/info/rfc7914/#section-5) **MUST** be applied to _X_, with three differences: the loop runs for _e_ rounds (independent from the length of _V_), Integerify is narrowed to the last 8 octets of _X_, and the length of _V_ is not constrained to a power of two. In each round, Integerify selects the block of _V_ that _X_ is combined with, an the blocks are mixed. After the last round, the evaluation result is the BLAKE3 regular hash digest of _X_.
+The second loop of scryptROMix described in [RFC 7914 Section 5](https://www.rfc-editor.org/info/rfc7914/#section-5) **MUST** be applied to _X_, with three differences: the loop runs for _e_ rounds (independent from the length of _V_), Integerify is narrowed to the last 8 octets of _X_, and the length of _V_ is not constrained to a power of two. In each round, Integerify selects the block of _V_ that _X_ is combined with, and the blocks are mixed. After the last round, the evaluation result is the BLAKE3 regular hash digest of _X_.
 
 ```
 repeat e times:
@@ -171,6 +171,44 @@ Mining has no bound on its runtime at high difficulties. Because the counter can
 ## Verifying
 
 Verifying determines whether a nonce is a proof over an input, by evaluating the nonce over that input. A nonce can only be verified by an instance sharing the same configuration as the instance that mined it, and using the same nonce type that mining used. The verifying instance **MUST** accept the nonce if and only if it is a proof over the input.
+
+# Vectors and Tests
+
+The `vectors/` directory contains JSON test vectors for TraverseV, and the `tests/` directory contains the tests that run them against the Rust implementation.
+
+## Vectors
+
+Each vector file has a `schema` field naming the JSON schema that describes its fields, and a `vectors` array.
+
+- `params.json`: parameters that an implementation accepts or rejects, including the bounds of each range and the values immediately outside it.
+- `mine.json`: the proof that mining returns for a configuration, input, starting counter, and increment.
+- `verify.json`: whether verifying accepts a proof over an input, including a proof presented to an instance with a different configuration, input, or nonce type.
+
+All mining and verifying vectors apply the following parameters:
+
+- **m_cost**: 12 * 1024
+- **t_cost**: 3
+- **e_cost**: 8
+- **n_cost**: 12
+
+The vectors intentionally apply a low `n_cost` to avoid long runtimes in testing. Each candidate nonce has a 1 in 4096 (2^-12) chance of having 12 leading zero bits, so mining at this difficulty evaluates around 4096 candidates on average. In the mining and verifying vectors, any vector with a secret corresponds to a Permissioned instance, and a vector without one corresponds to a Trustless instance. Context is provided as a UTF-8 string, with secrets and inputs provided as hex-encoded octet strings. The width corresponds to the size in octets of the counter and nonce types as either 4, 8, or 16 for 32-bit, 64-bit, and 128-bit unsigned integers.
+
+```json
+{
+    "id": "trustless_u128",
+    "context": "TRAVERSEV_TEST",
+    "input": "796F75206C6F7374207468652067616D65",
+    "width": 16,
+    "start": 0,
+    "increment": 1,
+    "proof": "14278"
+}
+```
+_Figure 12: Trustless u128 mining vector._
+
+## Tests
+
+One test is provided for each vector file. A test constructs an instance for each vector, performs the expected operation, and checks the result against the vector. The tests located in `tests/rust/` for the Rust implementation are run with `cargo test`.
 
 # Implementations
 
