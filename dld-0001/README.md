@@ -174,41 +174,7 @@ Verifying determines whether a nonce is a proof over an input, by evaluating the
 
 # Vectors and Tests
 
-The `vectors/` directory contains JSON test vectors for TraverseV, and the `tests/` directory contains the tests that run them against the Rust implementation.
-
-## Vectors
-
-Each vector file has a `schema` field naming the JSON schema that describes its fields, and a `vectors` array.
-
-- `params.json`: parameters that an implementation accepts or rejects, including the bounds of each range and the values immediately outside it.
-- `mine.json`: the proof that mining returns for a configuration, input, starting counter, and increment.
-- `verify.json`: whether verifying accepts a proof over an input, including a proof presented to an instance with a different configuration, input, or nonce type.
-
-All mining and verifying vectors apply the following parameters:
-
-- **m_cost**: 12 * 1024
-- **t_cost**: 3
-- **e_cost**: 8
-- **n_cost**: 12
-
-The vectors intentionally apply a low `n_cost` to avoid long runtimes in testing. Each candidate nonce has a 1 in 4096 (2^-12) chance of having 12 leading zero bits, so mining at this difficulty evaluates around 4096 candidates on average. In the mining and verifying vectors, any vector with a secret corresponds to a Permissioned instance, and a vector without one corresponds to a Trustless instance. Context is provided as a UTF-8 string, with secrets and inputs provided as hex-encoded octet strings. The width corresponds to the size in octets of the counter and nonce types as either 4, 8, or 16 for 32-bit, 64-bit, and 128-bit unsigned integers.
-
-```json
-{
-    "id": "trustless_u128",
-    "context": "TRAVERSEV_TEST",
-    "input": "796F75206C6F7374207468652067616D65",
-    "width": 16,
-    "start": 0,
-    "increment": 1,
-    "proof": "14278"
-}
-```
-_Figure 12: Trustless u128 mining vector._
-
-## Tests
-
-One test is provided for each vector file. A test constructs an instance for each vector, performs the expected operation, and checks the result against the vector. The tests located in `tests/rust/` for the Rust implementation are run with `cargo test`.
+The [`vectors/`](vectors/) directory contains JSON test vectors for TraverseV, and the [`tests/`](tests/) directory contains the tests that run them.
 
 # Implementations
 
