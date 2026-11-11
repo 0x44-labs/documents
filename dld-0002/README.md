@@ -25,7 +25,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - **BLAKE3(x)**: 32-octet [BLAKE3](https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf) regular hash of _x_.
 - **Canonical claims**: a claims set serialised as JSON in canonical form, as described in [RFC 8785](https://www.rfc-editor.org/info/rfc8785/).
 - **Challenge**: a verifier-issued value carrying a challenge identifier, expiration, challenge nonce, **DLD 1** parameters, and an authentication tag.
-- **Challenge identifier**: a [ULID](https://github.com/ulid/spec).
+- **Challenge identifier**: a [ULID](https://github.com/ulid/spec). As an input to BLAKE3 or KXOF, it is encoded as a 128-bit big-endian integer.
 - **Challenge nonce**: an octet string of at most 64 octets.
 - **Claims set**: a JSON object whose members are the claims, as described in [RFC 7519 Section 4](https://www.rfc-editor.org/info/rfc7519/#section-4).
 - **Counter**: a 128-bit unsigned integer, holding a count in the low 64 bits and a Unix time, in seconds, in the high 64 bits.
@@ -93,6 +93,8 @@ The **DLD 1** parameters _m_, _t_, _e_, and _n_, carried by a challenge on both 
 |     e     | 8             |
 |     n     | 20            |
 
+Provers and verifiers **MUST** reject any challenge or proof that contains a field not defined for its type.
+
 ### Challenge
 
 A challenge is a value that a verifier issues to a prover, carrying a required challenge identifier, expiration, challenge nonce, and authentication tag.
@@ -125,9 +127,11 @@ A proof is a response that a prover returns to a verifier for a challenge, carry
 | n_cost     | _n_                  | OPTIONAL |
 | auth_tag   | authentication tag   | REQUIRED |
 
+The fields of a proof other than `claims` and `nonce` are the fields of its challenge.
+
 ## Challenge Issuance
 
-A verifier issues a challenge over a challenge nonce _nonce_. The challenge identifier _id_ is a ULID, the expiration *expires_at* is the current Unix time plus the verifier's TTL, and the parameters _m_, _t_, _e_, and _n_ are the **DLD 1** parameters of the verifier.
+A verifier issues a challenge over a challenge nonce _nonce_, and **MUST NOT** issue a challenge over a challenge nonce longer than 64 octets. The challenge identifier _id_ is a ULID, the expiration *expires_at* is the current Unix time plus the verifier's TTL, and the parameters _m_, _t_, _e_, and _n_ are the **DLD 1** parameters of the verifier.
 
 An authentication tag **MUST** be computed with the key of the verifier _key_ over the fields of the challenge.
 
@@ -146,7 +150,7 @@ A prover responds to a challenge with a proof over a claims set.
 
 ### Prover Checks
 
-A prover **SHOULD NOT** be created for a challenge if any of its parameter exceed the ceiling set by the context.
+A prover **MUST NOT** be created for a challenge whose expiration has passed, and **SHOULD NOT** be created for a challenge if any of its parameters exceed the ceiling set by the context.
 
 ### Proof Generation
 
@@ -169,7 +173,7 @@ A verifier **MUST** accept a proof if and only if all of the following hold.
 
 A challenge is single-use. Without a replay store, a verifier accepts every valid proof over a challenge until its expiration, meaning the same proof can be submitted again and multiple proofs can be generated for the same challenge. A verifier **MAY** use a replay store to enforce single use.
 
-A verifier using a replay store **MUST** accept a proof only if, in addition to conditions 1 through 3 under "Verifying a Response", it has not been previously recorded and the replay store records the challenge identifier of the proof when first seen. Concurrent submissions of proofs over the same challenge **MUST NOT** result in more than one of them being accepted.
+A verifier using a replay store **MUST** accept a proof only if, in addition to conditions 1 through 3 under "Verifying a Response", its challenge identifier has not been previously recorded in the replay store, which records it when first seen. Concurrent submissions of proofs over the same challenge **MUST NOT** result in more than one of them being accepted.
 
 A recorded challenge identifier **MUST** be retained at least until the expiration of the challenge. If the clocks of verifiers sharing a replay store, or of a verifier and its replay store, can differ, the identifier **SHOULD** be retained beyond the expiration by at least that difference.
 
@@ -197,7 +201,7 @@ pbcp://<authority>/?id=<id>&expires_at=<time>&nonce=<nonce>&auth_tag=<tag>
 ```
 _Figure 4: PBCP Challenge URI._
 
-Query parameter values are encoded as follows. The authority is as described in [RFC 3986 Section 3.2](https://www.rfc-editor.org/info/rfc3986/#section-3.2).
+The authority is as described in [RFC 3986 Section 3.2](https://www.rfc-editor.org/info/rfc3986/#section-3.2). Query parameter values are encoded as follows:
 
 - **Challenge identifier**: its canonical ULID representation.
 - **Expiration** and **parameters**: decimal integers.
