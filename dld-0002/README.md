@@ -41,21 +41,61 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 A Proof-Bound Claims Protocol (PBCP) exchange is configured by the parameters of **DLD 1** and by a time to live (TTL). An implementation **MUST** reject values outside their ranges.
 
-| Name | Meaning                            | Range         |
-|------|------------------------------------|---------------|
-| ttl  | challenge time to live, in seconds | 0 to 2^64 - 1 |
+| Name | Meaning                             | Range                   |
+|------|-------------------------------------|-------------------------|
+| ttl  | challenge time to live, in seconds  | 0 to 2^64 - 1           |
+| m    | **DLD 1** parameter _m_             | as defined by **DLD 1** |
+| t    | **DLD 1** parameter _t_             | as defined by **DLD 1** |
+| e    | **DLD 1** parameter _e_             | as defined by **DLD 1** |
+| n    | **DLD 1** parameter _n_             | as defined by **DLD 1** |
 
 ## Context
 
 A PBCP context is created from an application context and **DLD 1** parameters. These parameters are those the challenges its verifiers issue carry and the ceiling for the challenges its provers accept. It creates the verifiers and provers of a PBCP exchange.
 
-A verifier is created from a context, a key, and a TTL. It takes its application context and **DLD 1** parameters from the context.
+A verifier is created from a context, a key, and a TTL. It takes its application context and **DLD 1** parameters from the context. A prover is created from a context and a challenge. It takes its application context from the context, and its **DLD 1** parameters from the challenge.
 
-A prover is created from a context and a challenge. It takes its application context from the context, and its **DLD 1** parameters from the challenge. A prover **SHOULD NOT** be created for a challenge if any of its parameter exceed the ceiling set by the context.
+## Proof-of-Work Instance
 
-## Challenge Type
+In both roles, a secret **MUST** be derived from the challenge identifier _id_ and the challenge nonce _nonce_.
 
-A challenge is a value that a verifier issues to a prover. It carries a challenge identifier, expiration, challenge nonce, and authentication tag, which are required, and **DLD 1** parameters _m_, _t_, _e_, and _n_, which are optional.
+```
+secret = BLAKE3(id || nonce)
+```
+_Figure 1: Challenge secret computation._
+
+The proof-of-work instance used by both roles is a **DLD 1** TraverseV instance in the Permissioned mode. To issue, respond to, or verify a challenge, both roles **MUST** create a proof-of-work instance from their application context, the **DLD 1** parameters of the challenge, and the challenge secret as the shared secret.
+
+## Counter Type
+
+The counter is the counter type and the nonce type of **DLD 1**.
+
+An increment is a 64-bit unsigned integer. Adding it to a counter adds it to the count of the counter and leaves its time unchanged. If the sum would exceed 2^64 - 1, the count is instead set to zero and the time is set to the current Unix time in seconds.
+
+As a nonce, a counter is encoded as the 16 little-endian octets of its 128-bit value, so the first 8 octets encode the count and the last 8 octets encode the time.
+
+## Exchange
+
+During a PBCP exchange, a verifier issues a challenge to a prover, and a prover responds with a proof over a claims set.
+
+```
+Verifier -> Prover: challenge = (id, expires_at, nonce, m, t, e, n, tag)
+Prover -> Verifier: proof = (challenge, claims, counter)
+```
+_Figure 2: Challenge and proof exchange._
+
+The **DLD 1** parameters _m_, _t_, _e_, and _n_, carried by a challenge on both sides of an exchange are optional and can be omitted. Any parameter that is omitted takes a default value.
+
+| Parameter | Default Value |
+|-----------|---------------|
+|     m     | 19 * 1024     |
+|     t     | 3             |
+|     e     | 8             |
+|     n     | 20            |
+
+### Challenge
+
+A challenge is a value that a verifier issues to a prover, carrying a required challenge identifier, expiration, challenge nonce, and authentication tag.
 
 | Field      | Value                | Presence |
 |------------|----------------------|----------|
@@ -68,11 +108,9 @@ A challenge is a value that a verifier issues to a prover. It carries a challeng
 | n_cost     | _n_                  | OPTIONAL |
 | auth_tag   | authentication tag   | REQUIRED |
 
-A parameter that is omitted from a challenge takes a default value defined by the implementation that parses the challenge. Differing default values between a prover and a verifier cause verification to fail.
+### Response
 
-## Response Type
-
-A proof is a response that a prover returns to a verifier for a challenge. It carries the identifier, expiration, authentication tag, and **DLD 1** parameters of the challenge it responds to, along with a claims set and a mined counter. The challenge nonce is carried in the `challenge` field, and the mined counter in the `nonce` field. The parameters are optional, and all other fields are required.
+A proof is a response that a prover returns to a verifier for a challenge, carrying a required challenge identifier, expiration, authentication tag, claims set, and a mined counter.
 
 | Field      | Value                | Presence |
 |------------|----------------------|----------|
@@ -87,19 +125,6 @@ A proof is a response that a prover returns to a verifier for a challenge. It ca
 | n_cost     | _n_                  | OPTIONAL |
 | auth_tag   | authentication tag   | REQUIRED |
 
-A parameter that is omitted from a proof takes a default value defined by the implementation that parses the proof. Differing default values between a prover and a verifier cause verification to fail.
-
-## Proof-of-Work Instance
-
-In both roles, a secret **MUST** be derived from the challenge identifier _id_ and the challenge nonce _nonce_.
-
-```
-secret = BLAKE3(id || nonce)
-```
-_Figure 1: Challenge secret computation._
-
-The proof-of-work instance used by both roles is a **DLD 1** TraverseV instance in the Permissioned mode. To issue, respond to, or verify a challenge, both roles **MUST** create a proof-of-work instance from their application context, the **DLD 1** parameters of the challenge, and the challenge secret as the shared secret.
-
 ## Challenge Issuance
 
 A verifier issues a challenge over a challenge nonce _nonce_. The challenge identifier _id_ is a ULID, the expiration *expires_at* is the current Unix time plus the verifier's TTL, and the parameters _m_, _t_, _e_, and _n_ are the **DLD 1** parameters of the verifier.
@@ -111,7 +136,7 @@ tag = KXOF(key, id || LE64(expires_at)
         || LE32(m) || LE32(t) || LE32(e) || LE32(n)
         || nonce, 16)
 ```
-_Figure 2: Authentication tag computation._
+_Figure 3: Authentication tag computation._
 
 Since a verifier can recompute the authentication tag of a challenge it issued, it needs no stored state to recognise it in a response.
 
@@ -119,13 +144,9 @@ Since a verifier can recompute the authentication tag of a challenge it issued, 
 
 A prover responds to a challenge with a proof over a claims set.
 
-### Counter
+### Prover Checks
 
-The counter is the counter type and the nonce type of **DLD 1**.
-
-An increment is a 64-bit unsigned integer. Adding it to a counter adds it to the count of the counter and leaves its time unchanged. If the sum would exceed 2^64 - 1, the count is instead set to zero and the time is set to the current Unix time in seconds.
-
-As a nonce, a counter is encoded as the 16 little-endian octets of its 128-bit value, so the first 8 octets encode the count and the last 8 octets encode the time.
+A prover **SHOULD NOT** be created for a challenge if any of its parameter exceed the ceiling set by the context.
 
 ### Proof Generation
 
@@ -139,15 +160,16 @@ A proof carries the challenge it responds to, the claims set, and the mined coun
 
 A verifier **MUST** accept a proof if and only if all of the following hold.
 
-1. An authentication tag computed as in Figure 2, from the fields of the proof's challenge and the verifier's key, equals the authentication tag of the challenge. An implementation **SHOULD** perform this check in constant time.
+1. An authentication tag computed as in Figure 3, from the fields of the proof's challenge and the verifier's key, equals the authentication tag of the challenge. An implementation **SHOULD** perform this check in constant time.
 2. Neither the time of the mined counter nor the current Unix time is greater than the expiration of the challenge.
 3. The mined counter is a **DLD 1** proof over the canonical claims, for the proof-of-work instance created from the challenge.
+4. If the verifier uses a replay store, the requirements of "Replay Protection" are satisfied.
 
-## Replay Protection
+### Replay Protection
 
 A challenge is single-use. Without a replay store, a verifier accepts every valid proof over a challenge until its expiration, meaning the same proof can be submitted again and multiple proofs can be generated for the same challenge. A verifier **MAY** use a replay store to enforce single use.
 
-A verifier using a replay store **MUST** accept a proof only if, in addition to the conditions described under "Verifying a Response", it has not been previously recorded and the replay store records the challenge identifier of the proof when first seen. Concurrent submissions of proofs over the same challenge **MUST NOT** result in more than one of them being accepted.
+A verifier using a replay store **MUST** accept a proof only if, in addition to conditions 1 through 3 under "Verifying a Response", it has not been previously recorded and the replay store records the challenge identifier of the proof when first seen. Concurrent submissions of proofs over the same challenge **MUST NOT** result in more than one of them being accepted.
 
 A recorded challenge identifier **MUST** be retained at least until the expiration of the challenge. If the clocks of verifiers sharing a replay store, or of a verifier and its replay store, can differ, the identifier **SHOULD** be retained beyond the expiration by at least that difference.
 
@@ -173,7 +195,7 @@ A challenge is serialised as a URI with the scheme `pbcp` and an authority that 
 pbcp://<authority>/?id=<id>&expires_at=<time>&nonce=<nonce>&auth_tag=<tag>
         [&m_cost=<m>][&t_cost=<t>][&e_cost=<e>][&n_cost=<n>]
 ```
-_Figure 3: PBCP Challenge URI._
+_Figure 4: PBCP Challenge URI._
 
 Query parameter values are encoded as follows. The authority is as described in [RFC 3986 Section 3.2](https://www.rfc-editor.org/info/rfc3986/#section-3.2).
 
