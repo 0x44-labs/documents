@@ -6,7 +6,7 @@ Type:       Specification
 Status:     In Progress
 Authors:    Haap, Jacob V. B.
 Created:    2026-11-10
-Updated:    2026-11-10
+Updated:    2026-11-11
 Requires:   1
 ```
 
@@ -150,3 +150,33 @@ A challenge is single-use. Without a replay store, a verifier accepts every vali
 A verifier using a replay store **MUST** accept a proof only if, in addition to the conditions described under "Verifying a Response", it has not been previously recorded and the replay store records the challenge identifier of the proof when first seen. Concurrent submissions of proofs over the same challenge **MUST NOT** result in more than one of them being accepted.
 
 A recorded challenge identifier **MUST** be retained at least until the expiration of the challenge. If the clocks of verifiers sharing a replay store, or of a verifier and its replay store, can differ, the identifier **SHOULD** be retained beyond the expiration by at least that difference.
+
+## Encodings
+
+A challenge is serialised as bytes or as a URI, and a proof is serialised as bytes.
+
+### Byte Serialisation
+
+A challenge or proof is serialised as a CBOR map, as described in [RFC 8949](https://www.rfc-editor.org/info/rfc8949/), with a UTF-8 string key for each field of its type. Field values are encoded as follows:
+
+- **Challenge identifier**: a UTF-8 string, in its canonical ULID representation.
+- **Expiration** and **parameters**: unsigned integers.
+- **Challenge nonce** and **authentication tag**: octet strings.
+- **Claims set**: an octet string of its canonical claims.
+- **Mined counter**: an octet string of its encoding as a nonce.
+
+### URI Serialisation
+
+A challenge is serialised as a URI with the scheme `pbcp` and an authority that names where a proof should be returned.
+
+```
+pbcp://<authority>/?id=<id>&expires_at=<time>&nonce=<nonce>&auth_tag=<tag>
+        [&m_cost=<m>][&t_cost=<t>][&e_cost=<e>][&n_cost=<n>]
+```
+_Figure 3: PBCP Challenge URI._
+
+Query parameter values are encoded as follows. The authority is as described in [RFC 3986 Section 3.2](https://www.rfc-editor.org/info/rfc3986/#section-3.2).
+
+- **Challenge identifier**: its canonical ULID representation.
+- **Expiration** and **parameters**: decimal integers.
+- **Challenge nonce** and **authentication tag**: base64url without padding, as described in [RFC 4648 Section 5](https://www.rfc-editor.org/info/rfc4648/#section-5).
