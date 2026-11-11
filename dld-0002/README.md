@@ -53,6 +53,42 @@ A verifier is created from a context, a key, and a TTL. It takes its application
 
 A prover is created from a context and a challenge. It takes its application context from the context, and its **DLD 1** parameters from the challenge. A prover **SHOULD NOT** be created for a challenge if any of its parameter exceed the ceiling set by the context.
 
+## Challenge Type
+
+A challenge is a value that a verifier issues to a prover. It carries a challenge identifier, expiration, challenge nonce, and authentication tag, which are required, and **DLD 1** parameters _m_, _t_, _e_, and _n_, which are optional.
+
+| Field      | Value                | Presence |
+|------------|----------------------|----------|
+| id         | challenge identifier | REQUIRED |
+| expires_at | expiration           | REQUIRED |
+| nonce      | challenge nonce      | REQUIRED |
+| m_cost     | _m_                  | OPTIONAL |
+| t_cost     | _t_                  | OPTIONAL |
+| e_cost     | _e_                  | OPTIONAL |
+| n_cost     | _n_                  | OPTIONAL |
+| auth_tag   | authentication tag   | REQUIRED |
+
+A parameter that is omitted from a challenge takes a default value defined by the implementation that parses the challenge. Differing default values between a prover and a verifier cause verification to fail.
+
+## Response Type
+
+A proof is a response that a prover returns to a verifier for a challenge. It carries the identifier, expiration, authentication tag, and **DLD 1** parameters of the challenge it responds to, along with a claims set and a mined counter. The challenge nonce is carried in the `challenge` field, and the mined counter in the `nonce` field. The parameters are optional, and all other fields are required.
+
+| Field      | Value                | Presence |
+|------------|----------------------|----------|
+| id         | challenge identifier | REQUIRED |
+| expires_at | expiration           | REQUIRED |
+| claims     | claims set           | REQUIRED |
+| challenge  | challenge nonce      | REQUIRED |
+| nonce      | mined counter        | REQUIRED |
+| m_cost     | _m_                  | OPTIONAL |
+| t_cost     | _t_                  | OPTIONAL |
+| e_cost     | _e_                  | OPTIONAL |
+| n_cost     | _n_                  | OPTIONAL |
+| auth_tag   | authentication tag   | REQUIRED |
+
+A parameter that is omitted from a proof takes a default value defined by the implementation that parses the proof. Differing default values between a prover and a verifier cause verification to fail.
+
 ## Proof-of-Work Instance
 
 In both roles, a secret **MUST** be derived from the challenge identifier _id_ and the challenge nonce _nonce_.
