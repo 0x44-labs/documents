@@ -206,3 +206,7 @@ The authority is as described in [RFC 3986 Section 3.2](https://www.rfc-editor.o
 - **Challenge identifier**: its canonical ULID representation.
 - **Expiration** and **parameters**: decimal integers.
 - **Challenge nonce** and **authentication tag**: base64url without padding, as described in [RFC 4648 Section 5](https://www.rfc-editor.org/info/rfc4648/#section-5).
+
+# Implementations
+
+- **Rust**: [0x44-labs/rs-pbcp](https://github.com/0x44-labs/rs-pbcp), published as the [`pbcp`](https://crates.io/crates/pbcp) crate.
