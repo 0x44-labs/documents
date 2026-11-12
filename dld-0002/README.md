@@ -12,7 +12,7 @@ Requires:   1
 
 # Specification
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/info/rfc2119).
 
 ## Dependencies
 
@@ -23,7 +23,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - **Application context**: a UTF-8 string.
 - **Authentication tag**: a 16-octet value authenticating the fields of a challenge by the issuing verifier's key.
 - **BLAKE3(x)**: 32-octet [BLAKE3](https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf) regular hash of _x_.
-- **Canonical claims**: a claims set serialised as JSON in canonical form, as described in [RFC 8785](https://www.rfc-editor.org/info/rfc8785/).
+- **Canonical claims**: a claims set serialised as JSON in canonical form, as described in [RFC 8785](https://www.rfc-editor.org/info/rfc8785).
 - **Challenge**: a verifier-issued value carrying a challenge identifier, expiration, challenge nonce, **DLD 1** parameters, and an authentication tag.
 - **Challenge identifier**: a [ULID](https://github.com/ulid/spec). As an input to BLAKE3 or KXOF, it is encoded as a 128-bit big-endian integer.
 - **Challenge nonce**: an octet string of at most 64 octets.
@@ -131,7 +131,11 @@ The fields of a proof other than `claims` and `nonce` are the fields of its chal
 
 ## Challenge Issuance
 
-A verifier issues a challenge over a challenge nonce _nonce_, and **MUST NOT** issue a challenge over a challenge nonce longer than 64 octets. The challenge identifier _id_ is a ULID, the expiration *expires_at* is the current Unix time plus the verifier's TTL, and the parameters _m_, _t_, _e_, and _n_ are the **DLD 1** parameters of the verifier.
+A verifier issues a challenge over a challenge nonce _nonce_, and **MUST NOT** issue a challenge over a challenge nonce longer than 64 octets.
+
+- The challenge identifier _id_ is a ULID.
+- The expiration *expires_at* is the current Unix time plus the verifier’s TTL, saturating at 2^64 - 1.
+- The parameters _m_, _t_, _e_, and _n_ are the **DLD 1** parameters of the verifier.
 
 An authentication tag **MUST** be computed with the key of the verifier _key_ over the fields of the challenge.
 
@@ -173,7 +177,7 @@ A verifier **MUST** accept a proof if and only if all of the following hold.
 
 A challenge is single-use. Without a replay store, a verifier accepts every valid proof over a challenge until its expiration, meaning the same proof can be submitted again and multiple proofs can be generated for the same challenge. A verifier **MAY** use a replay store to enforce single use.
 
-A verifier using a replay store **MUST** accept a proof only if, in addition to conditions 1 through 3 under "Verifying a Response", its challenge identifier has not been previously recorded in the replay store, which records it when first seen. Concurrent submissions of proofs over the same challenge **MUST NOT** result in more than one of them being accepted.
+A verifier using a replay store **MUST** accept a proof only if, in addition to conditions 1 through 3 under "Verifying a Response", its challenge identifier has not been previously recorded in the replay store, which records it when the first proof over the challenge is submitted. Concurrent submissions of proofs over the same challenge **MUST NOT** result in more than one of them being accepted.
 
 A recorded challenge identifier **MUST** be retained at least until the expiration of the challenge. If the clocks of verifiers sharing a replay store, or of a verifier and its replay store, can differ, the identifier **SHOULD** be retained beyond the expiration by at least that difference.
 
@@ -183,7 +187,7 @@ A challenge is serialised as bytes or as a URI, and a proof is serialised as byt
 
 ### Byte Serialisation
 
-A challenge or proof is serialised as a CBOR map, as described in [RFC 8949](https://www.rfc-editor.org/info/rfc8949/), with a UTF-8 string key for each field of its type. Field values are encoded as follows:
+A challenge or proof is serialised as a CBOR map, as described in [RFC 8949](https://www.rfc-editor.org/info/rfc8949), with a UTF-8 string key for each field of its type. Field values are encoded as follows:
 
 - **Challenge identifier**: a UTF-8 string, in its canonical ULID representation.
 - **Expiration** and **parameters**: unsigned integers.
@@ -210,3 +214,14 @@ The authority is as described in [RFC 3986 Section 3.2](https://www.rfc-editor.o
 # Implementations
 
 - **Rust**: [0x44-labs/rs-pbcp](https://github.com/0x44-labs/rs-pbcp), published as the [`pbcp`](https://crates.io/crates/pbcp) crate.
+
+# References
+
+- Berners-Lee, T., Fielding, R., & Masinter, L. (2005). _RFC 3986: Uniform Resource Identifier (URI): Generic Syntax_. RFC Editor. https://www.rfc-editor.org/info/rfc3986
+- Bormann, C., & Hoffman, P. (2020). _RFC 8949: Concise Binary Object Representation (CBOR)_. RFC Editor. https://www.rfc-editor.org/info/rfc8949
+- Bradner, S. (1997). _RFC 2119: Key words for use in RFCs to indicate requirement levels_. RFC Editor. https://www.rfc-editor.org/info/rfc2119
+- Jones, M., Bradley, J., & Sakimura, N. (2015). _RFC 7519: JSON Web Token (JWT)_. RFC Editor. https://www.rfc-editor.org/info/rfc7519
+- Josefsson, S. (2006). _RFC 4648: The Base16, Base32, and Base64 Data Encodings_. RFC Editor. https://www.rfc-editor.org/info/rfc4648
+- O'Connor, J., Aumasson, J.-P., Neves, S., & Wilcox-O'Hearn, Z. (2020). _BLAKE3_. GitHub. https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf
+- Rundgren, A., Jordan, B., & Erdtman, S. (2020). _RFC 8785: JSON Canonicalization Scheme (JCS)_. RFC Editor. https://www.rfc-editor.org/info/rfc8785
+- _Universally Unique Lexicographically Sortable Identifier_. (n.d.). GitHub. https://github.com/ulid/spec
