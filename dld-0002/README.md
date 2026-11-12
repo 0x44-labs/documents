@@ -6,9 +6,13 @@ Type:       Specification
 Status:     In Progress
 Authors:    Haap, Jacob V. B.
 Created:    2026-11-10
-Updated:    2026-11-11
+Updated:    2026-11-12
 Requires:   1
 ```
+
+# Abstract
+
+This document specifies the Proof-Bound Claims Protocol (PBCP), a protocol for producing claims whose assertion is backed by proof of resources spent. Every PBCP exchange consists of two roles. A verifier issues challenges, each carrying the difficulty a proof must meet, and verifies the responses it receives. It authenticates each issued challenge with its own key, so recognising a challenge requires no stored state. A challenge is single-use and expires. A prover responds to a challenge by providing a claims set and mining a counter over its canonical claims that satisfies the challenge's difficulty. The resulting proof is bound to both the challenge and the claims set, and demonstrates that the memory and CPU work the challenge demands was performed. Challenges and proofs are serialised as CBOR maps, and challenges can also be serialised as URIs.
 
 # Specification
 
